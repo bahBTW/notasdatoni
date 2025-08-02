@@ -63,3 +63,8 @@ button:hover {
 .song a:hover {
   text-decoration: underline;
 }
+
+.song iframe {
+  border-radius: 8px;
+  margin-top: 8px;
+}
