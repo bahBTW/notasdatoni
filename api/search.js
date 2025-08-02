@@ -1,50 +1,58 @@
+const fetch = require("node-fetch");
+
+// Pegando as variáveis do ambiente (deve estar configurado no Vercel)
+const GENIUS_TOKEN = process.env.GENIUS_TOKEN;
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+
+async function getSpotifyAccessToken() {
+  const creds = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString("base64");
+
+  const response = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${creds}`,
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: "grant_type=client_credentials"
+  });
+
+  const data = await response.json();
+  return data.access_token;
+}
+
 export default async function handler(req, res) {
   const { q } = req.query;
 
   if (!q) return res.status(400).json({ error: "Missing query param" });
 
+  if (!GENIUS_TOKEN || !SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
+    return res.status(500).json({ error: "Missing environment variables" });
+  }
+
   try {
-    // Genius
+    // Busca Genius
     const geniusRes = await fetch(`https://api.genius.com/search?q=${encodeURIComponent(q)}`, {
       headers: { Authorization: `Bearer ${GENIUS_TOKEN}` }
     });
 
     const geniusText = await geniusRes.text();
 
+    let geniusData;
     try {
-      var geniusData = JSON.parse(geniusText);
+      geniusData = JSON.parse(geniusText);
     } catch (e) {
       console.error("Erro ao parsear Genius JSON:", geniusText);
       return res.status(500).json({ error: "Erro no Genius API", detail: geniusText });
     }
 
-    // Spotify token
-    const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString("base64")}`,
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: "grant_type=client_credentials"
-    });
-
-    const tokenText = await tokenRes.text();
-
-    let spotifyTokenData;
-    try {
-      spotifyTokenData = JSON.parse(tokenText);
-    } catch (e) {
-      console.error("Erro ao parsear token Spotify:", tokenText);
-      return res.status(500).json({ error: "Erro no token Spotify", detail: tokenText });
-    }
-
-    const spotifyToken = spotifyTokenData.access_token;
-
+    // Token Spotify
+    const spotifyToken = await getSpotifyAccessToken();
     if (!spotifyToken) {
-      return res.status(500).json({ error: "Token Spotify não recebido" });
+      return res.status(500).json({ error: "Não foi possível obter token do Spotify" });
     }
 
-    // Buscar músicas Spotify para cada Genius hit
+    // Buscar músicas Spotify para cada resultado Genius
     const hits = await Promise.all(
       geniusData.response.hits.map(async (hit) => {
         const song = hit.result;
@@ -69,8 +77,7 @@ export default async function handler(req, res) {
             artist: song.primary_artist.name,
             url: song.url,
             thumbnail: song.song_art_image_thumbnail_url,
-            spotifyTrackId: null,
-            spotifyError: spotifyText
+            spotifyTrackId: null
           };
         }
 
