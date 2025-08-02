@@ -1,35 +1,65 @@
 body {
-  font-family: sans-serif;
-  background-color: #1e1e2f;
-  color: #fff;
+  background: #1e1e2f;
+  color: white;
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 20px;
 }
 
 .container {
   max-width: 600px;
-  margin: auto;
+  margin: 0 auto;
   text-align: center;
 }
 
 input {
-  width: 80%;
+  width: 70%;
   padding: 10px;
-  margin: 10px 0;
   border-radius: 8px;
   border: none;
+  margin-right: 10px;
 }
 
 button {
   padding: 10px 20px;
-  background-color: #9a7cff;
-  color: white;
+  background: #9a7cff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  color: white;
 }
 
-#result {
+button:hover {
+  background: #7a5ce6;
+}
+
+#results {
   margin-top: 20px;
   text-align: left;
+}
+
+.song {
+  background: #2c2c4c;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.song img {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  margin-right: 15px;
+}
+
+.song a {
+  color: #bda7ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.song a:hover {
+  text-decoration: underline;
 }
