@@ -1,6 +1,3 @@
-const fetch = require("node-fetch");
-
-// Pegando as variáveis do ambiente (deve estar configurado no Vercel)
 const GENIUS_TOKEN = process.env.GENIUS_TOKEN;
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
@@ -24,35 +21,30 @@ async function getSpotifyAccessToken() {
 export default async function handler(req, res) {
   const { q } = req.query;
 
-  if (!q) return res.status(400).json({ error: "Missing query param" });
+  if (!q) return res.status(400).json({ error: "Missing query parameter 'q'" });
 
   if (!GENIUS_TOKEN || !SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
     return res.status(500).json({ error: "Missing environment variables" });
   }
 
   try {
-    // Busca Genius
     const geniusRes = await fetch(`https://api.genius.com/search?q=${encodeURIComponent(q)}`, {
       headers: { Authorization: `Bearer ${GENIUS_TOKEN}` }
     });
 
-    const geniusText = await geniusRes.text();
-
-    let geniusData;
-    try {
-      geniusData = JSON.parse(geniusText);
-    } catch (e) {
-      console.error("Erro ao parsear Genius JSON:", geniusText);
-      return res.status(500).json({ error: "Erro no Genius API", detail: geniusText });
+    if (!geniusRes.ok) {
+      const text = await geniusRes.text();
+      console.error("Genius API error:", geniusRes.status, text);
+      return res.status(geniusRes.status).json({ error: "Failed to fetch from Genius API", detail: text });
     }
 
-    // Token Spotify
+    const geniusData = await geniusRes.json();
+
     const spotifyToken = await getSpotifyAccessToken();
     if (!spotifyToken) {
-      return res.status(500).json({ error: "Não foi possível obter token do Spotify" });
+      return res.status(500).json({ error: "Failed to get Spotify access token" });
     }
 
-    // Buscar músicas Spotify para cada resultado Genius
     const hits = await Promise.all(
       geniusData.response.hits.map(async (hit) => {
         const song = hit.result;
@@ -65,12 +57,9 @@ export default async function handler(req, res) {
           }
         );
 
-        const spotifyText = await spotifyRes.text();
-        let spotifyData;
-        try {
-          spotifyData = JSON.parse(spotifyText);
-        } catch (e) {
-          console.error("Erro ao parsear Spotify search:", spotifyText);
+        if (!spotifyRes.ok) {
+          const spotifyText = await spotifyRes.text();
+          console.error("Spotify search error:", spotifyRes.status, spotifyText);
           return {
             id: song.id,
             title: song.title,
@@ -81,6 +70,7 @@ export default async function handler(req, res) {
           };
         }
 
+        const spotifyData = await spotifyRes.json();
         const track = spotifyData.tracks.items[0] || null;
 
         return {
@@ -95,8 +85,8 @@ export default async function handler(req, res) {
     );
 
     res.status(200).json({ hits });
-  } catch (err) {
-    console.error("Erro interno API:", err);
-    res.status(500).json({ error: err.message || "Internal Server Error" });
+  } catch (error) {
+    console.error("Internal error:", error);
+    res.status(500).json({ error: error.message || "Internal Server Error" });
   }
 }
