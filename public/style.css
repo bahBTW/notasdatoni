@@ -1,17 +1,119 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  margin: 2rem;
-  background: #f9f9f9;
-  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-#results .song {
+
+h1 {
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 2.5rem;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+#searchInput {
+  width: 100%;
+  max-width: 450px;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  border-radius: 8px 0 0 8px;
+  border: none;
+  outline: none;
+}
+
+#searchBtn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background-color: #ff4081;
+  color: white;
+  border: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#searchBtn:hover {
+  background-color: #e73370;
+}
+
+.search-container {
+  display: flex;
+  width: 100%;
+  max-width: 550px;
   margin-bottom: 2rem;
-  padding: 1rem;
-  background: white;
-  border-radius: 6px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border-radius: 8px;
+  background: #fff;
 }
+
+#results {
+  width: 100%;
+  max-width: 550px;
+}
+
+.song {
+  background: rgba(255 255 255 / 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  transition: background-color 0.3s ease;
+}
+
+.song:hover {
+  background: rgba(255 255 255 / 0.2);
+}
+
+.song h3 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.song a {
+  color: #ff4081;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.song a:hover {
+  text-decoration: underline;
+}
+
 iframe {
-  margin-top: 0.5rem;
-  border-radius: 6px;
+  margin-top: 0.75rem;
+  border-radius: 8px;
+  width: 100%;
+  height: 180px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .search-container {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  #searchInput {
+    border-radius: 8px 8px 0 0;
+  }
+
+  #searchBtn {
+    border-radius: 0 0 8px 8px;
+    margin-top: 0.5rem;
+  }
 }
