@@ -29,7 +29,6 @@ export default async function handler(req, res) {
         const song = hit.result;
         const query = `${song.primary_artist.name} ${song.title}`;
 
-        // Busca no YouTube Data API v3
         const ytRes = await fetch(
           `https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&maxResults=1&type=video&key=${YOUTUBE_API_KEY}`
         );
