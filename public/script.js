@@ -47,3 +47,11 @@ document.getElementById("searchBtn").addEventListener("click", () => {
   const query = document.getElementById("searchInput").value.trim();
   if (query) searchMusic(query);
 });
+
+// Buscar também ao apertar Enter no input
+document.getElementById("searchInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const query = e.target.value.trim();
+    if (query) searchMusic(query);
+  }
+});
