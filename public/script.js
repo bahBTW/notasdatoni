@@ -1,55 +1,49 @@
-async function search() {
-  const query = document.getElementById("search").value.trim();
+async function searchMusic(query) {
   const resultsDiv = document.getElementById("results");
-
-  if (!query) {
-    resultsDiv.innerHTML = '<p style="color:#ffcc00;">Digite algo para buscar!</p>';
-    return;
-  }
-
   resultsDiv.innerHTML = "<p>Buscando...</p>";
 
   try {
-    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-    const data = await res.json();
-
-    if (data.error) {
-      resultsDiv.innerHTML = `<p style="color:#f55;">Erro: ${data.error}</p>`;
+    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+    if (!response.ok) {
+      const error = await response.json();
+      resultsDiv.innerHTML = `<p style="color: red;">Erro: ${error.error}</p>`;
       return;
     }
+    const data = await response.json();
 
     if (!data.hits.length) {
       resultsDiv.innerHTML = "<p>Nenhum resultado encontrado.</p>";
       return;
     }
 
-    resultsDiv.innerHTML = data.hits
-      .map(
-        (song) => `
-      <div class="song">
-        <img src="${song.thumbnail}" alt="Arte da música" />
-        <div>
-          <a href="${song.url}" target="_blank" rel="noopener noreferrer">${song.title}</a>
-          <p>${song.artist}</p>
-          ${
-            song.spotifyTrackId
-              ? `<iframe
-                  src="https://open.spotify.com/embed/track/${song.spotifyTrackId}"
-                  width="300"
-                  height="80"
-                  frameborder="0"
-                  allowtransparency="true"
-                  allow="encrypted-media"
-                  style="margin-top:8px; border-radius:8px;">
-                </iframe>`
-              : ""
-          }
-        </div>
-      </div>
-    `
-      )
-      .join("");
-  } catch (e) {
-    resultsDiv.innerHTML = `<p style="color:#f55;">Erro ao buscar: ${e.message}</p>`;
+    resultsDiv.innerHTML = "";
+    data.hits.forEach(hit => {
+      const div = document.createElement("div");
+      div.classList.add("song");
+
+      div.innerHTML = `
+        <h3>${hit.title} — ${hit.artist}</h3>
+        <a href="${hit.url}" target="_blank" rel="noopener noreferrer">Ver letra no Genius</a><br/>
+        ${hit.youtubeVideoId ? `
+          <iframe
+            width="300"
+            height="170"
+            src="https://www.youtube.com/embed/${hit.youtubeVideoId}"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        ` : `<p>Vídeo no YouTube não encontrado.</p>`}
+      `;
+
+      resultsDiv.appendChild(div);
+    });
+  } catch (err) {
+    resultsDiv.innerHTML = `<p style="color: red;">Erro ao buscar: ${err.message}</p>`;
   }
 }
+
+document.getElementById("searchBtn").addEventListener("click", () => {
+  const query = document.getElementById("searchInput").value.trim();
+  if (query) searchMusic(query);
+});
