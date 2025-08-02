@@ -1,70 +1,17 @@
 body {
-  background: #1e1e2f;
-  color: white;
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
+  margin: 2rem;
+  background: #f9f9f9;
+  color: #333;
 }
-
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-input {
-  width: 70%;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  margin-right: 10px;
-}
-
-button {
-  padding: 10px 20px;
-  background: #9a7cff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: white;
-}
-
-button:hover {
-  background: #7a5ce6;
-}
-
-#results {
-  margin-top: 20px;
-  text-align: left;
-}
-
-.song {
-  background: #2c2c4c;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-}
-
-.song img {
-  width: 60px;
-  height: 60px;
+#results .song {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
   border-radius: 6px;
-  margin-right: 15px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
 }
-
-.song a {
-  color: #bda7ff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.song a:hover {
-  text-decoration: underline;
-}
-
-.song iframe {
-  border-radius: 8px;
-  margin-top: 8px;
+iframe {
+  margin-top: 0.5rem;
+  border-radius: 6px;
 }
