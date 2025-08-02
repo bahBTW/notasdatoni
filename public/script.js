@@ -29,6 +29,15 @@ async function search() {
         <div>
           <a href="${song.url}" target="_blank" rel="noopener noreferrer">${song.title}</a>
           <p>${song.artist}</p>
+          <iframe
+            src="https://open.spotify.com/embed/search/${encodeURIComponent(song.artist + ' ' + song.title)}"
+            width="300"
+            height="80"
+            frameborder="0"
+            allowtransparency="true"
+            allow="encrypted-media"
+            style="margin-top:8px; border-radius:8px;">
+          </iframe>
         </div>
       </div>
     `).join('');
